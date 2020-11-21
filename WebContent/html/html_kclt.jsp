@@ -73,8 +73,8 @@
        <!--讨论内容-->
       <div id="discuss-content">
       <div class="new_discuss" align="right">
-            <a href="#">[我的动态]</a>
-            <a href="#">[发表帖子]</a>
+            <a href="my_activity.jsp">[我的动态]</a>
+            <a href="edit_comment.jsp">[发表帖子]</a>
       </div>            
 	    <!--表格内容-->
         <table id="discuss-datas">
@@ -93,7 +93,7 @@
           String sql=null;
           ResultSet rs=null;
           sql="select title,user_id,user_name,commit_time,comment.comment_id as comment_id, ";
-          sql+=" (select count(*)from star where star.comment_id=`comment`.comment_id)as stars, ";
+          sql+=" (select count(distinct user_id)from star where star.comment_id=`comment`.comment_id)as stars, ";
           sql+=" (select count(*)from reply where reply.comment_id=`comment`.comment_id)as replys ";
           sql+=" from `comment`,user where author_id=user_id ";
           rs=util.query(sql);
@@ -103,7 +103,7 @@
               <td class="col1"> <i class="sheng"> </i> <a href="comment_info.jsp?comment_id=<%=rs.getInt("comment_id") %>"><%=rs.getString("title") %></a> </td>
               <td><%=rs.getInt("stars") %></td>
               <td><%=rs.getInt("replys") %></td>
-              <td> <a href="user_info.jsp?user_id=<%=rs.getInt("user_id") %>"><%=rs.getString("user_name") %></a> </td>
+              <td><%=rs.getString("user_name") %> </td>
               <td><%=rs.getString("commit_time") %></td>
             </tr>
             <%
@@ -115,8 +115,13 @@
           </tbody>
         </table>
          <div id="discuss-total">
-          <div class="all_discuss">共900个话题
-            <a href="#">浏览全部话题>>></a>
+         <%
+         sql="select count(*) from comment ";
+         rs=util.query(sql);
+         if(rs.next())
+         %>
+          <div class="all_discuss">共<%=rs.getInt(1) %>个留言
+            <a href="#">浏览全部留言>>></a>
           </div> 
         </div>
       </div>
@@ -133,4 +138,5 @@
         </tbody>
       </table>
     </body>
+    <%util.close(); %>
 </html>
